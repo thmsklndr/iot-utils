@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='iot-utils',
-    version='0.1',
+    version='0.11',
     url='',
     license='GPLv3',
     author='Thomas Kleinöder',

@@ -1,33 +1,34 @@
 import time
 import sys
 import signal
+import os
 
 import logging
 
 from iot_utils.exceptions import UnrecoverableError
 
-class ProcessRunner():
 
+class ProcessRunner():
     GRACEFULL_STOP = False
     _INIT = False
 
-
     def __init__(self,
             cls,
-            loop_intrvl,
-            logger = logging.getLogger('process_runner'),
-            loglev  = logging.INFO
+            loop_intrvl: int,
+            loglev: str = "INFO"
         ):
         self.LOOP_INTERVAL = loop_intrvl
-        self.logger = logger
 
         if not ProcessRunner._INIT:
-            signal.signal(signal.SIGTERM, ProcessRunner.kill_handler)
-            signal.signal(signal.SIGINT, ProcessRunner.gracefull_handler)
+
+            loglev = logging.getLevelName(os.getenv("LOGGING_LOG_LEV", loglev))
 
             logging.basicConfig(level=loglev, stream=sys.stdout,
-                format= "[%(levelname)s] %(name)s: %(message)s"
+                format= "[%(levelname)6s %(asctime)s] %(name)s: %(message)s", datefmt="%d%b%Y %H:%M:%S"
             )
+
+            signal.signal(signal.SIGTERM, ProcessRunner.kill_handler)
+            signal.signal(signal.SIGINT, ProcessRunner.gracefull_handler)
 
             ProcessRunner._INIT = True
 
@@ -55,11 +56,11 @@ class ProcessRunner():
                         break
                     time.sleep( self.LOOP_INTERVAL )
             except UnrecoverableError:
-                self.logger.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
+                logging.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
                 sys.exit(1)
             except Exception as e:
-                self.logger.error(f"Error during execution loop: {e}")
-                self.logger.info("Trying to resume after 10 secs ...")
+                logging.error(f"Error during execution loop: {e}")
+                logging.info("Trying to resume after 10 secs ...")
                 time.sleep(10)
             if ProcessRunner.GRACEFULL_STOP:
                 break

@@ -58,8 +58,8 @@ class ProcessRunner():
                 self.logger.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
                 sys.exit(1)
             except Exception as e:
-                self.logger.exception(f"Error during execution loop: {e}")
-                self.logger.warning("Trying to resume after 10 secs ...")
+                self.logger.error(f"Error during execution loop: {e}")
+                self.logger.info("Trying to resume after 10 secs ...")
                 time.sleep(10)
             if ProcessRunner.GRACEFULL_STOP:
                 break

@@ -24,7 +24,7 @@ class ProcessRunner():
             loglev = logging.getLevelName(os.getenv("LOGGING_LOG_LEV", loglev))
 
             logging.basicConfig(level=loglev, stream=sys.stdout,
-                format= "[%(levelname)6s %(asctime)s] %(name)s: %(message)s", datefmt="%d%b%Y %H:%M:%S"
+                format= "[%(levelname)7s %(asctime)s] %(name)s: %(message)s", datefmt="%d%b%Y %H:%M:%S"
             )
 
             signal.signal(signal.SIGTERM, ProcessRunner.kill_handler)

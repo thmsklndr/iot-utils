@@ -1,6 +1,8 @@
 import socket
 import time
 
+import logging
+logger = logging.getLogger("iot_utils.net")
 
 def check_open_port(address: str, port: int, wait_t: float = None):
     # Create a TCP socket
@@ -19,6 +21,6 @@ def check_open_port(address: str, port: int, wait_t: float = None):
             if wait_t:
                 time.sleep(wait_t)
         except:
-            print("failed to close ...")
+            logger.error(f"Failed to close socket {address}:{port}")
 
     return ret

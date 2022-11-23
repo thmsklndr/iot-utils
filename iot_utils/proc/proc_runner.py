@@ -7,6 +7,7 @@ import logging
 
 from iot_utils.exceptions import UnrecoverableError
 
+_dflt_log_lev = os.getenv("LOGGING_LOG_LEV", "INFO")
 
 class ProcessRunner():
     GRACEFULL_STOP = False
@@ -15,13 +16,13 @@ class ProcessRunner():
     def __init__(self,
             cls,
             loop_intrvl: int,
-            loglev: str = "INFO"
+            loglev: str = _dflt_log_lev
         ):
         self.LOOP_INTERVAL = loop_intrvl
 
         if not ProcessRunner._INIT:
 
-            loglev = logging.getLevelName(os.getenv("LOGGING_LOG_LEV", loglev))
+            loglev = logging.getLevelName(loglev)
 
             logging.basicConfig(level=loglev, stream=sys.stdout,
                 format= "[%(levelname)7s %(asctime)s] %(name)s: %(message)s", datefmt="%d%b%Y %H:%M:%S"

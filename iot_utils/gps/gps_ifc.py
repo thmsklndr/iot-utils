@@ -1,3 +1,5 @@
+import time
+
 import gps
 import threading
 
@@ -92,7 +94,8 @@ class GPS_ifc(threading.Thread):
                             "error_vertical": fix.epv,
                             "speed": fix.speed,
                             "uSat": self.gpsd.satellites_used,
-                            "nSat": len(self.gpsd.satellites)
+                            "nSat": len(self.gpsd.satellites),
+                            "timestamp": time.time()
                         }
 
                 # nx = self.gpsd.next()

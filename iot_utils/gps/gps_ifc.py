@@ -3,6 +3,9 @@ import time
 import gps
 import threading
 
+from collections import deque
+from statistics import mean
+
 import logging
 logger = logging.getLogger('gps.ifc')
 
@@ -36,9 +39,33 @@ class GPS_ifc(threading.Thread):
 
         self._state = True
 
+        self.mem_maxlen = 10
+        self.mem = deque(maxlen=self.mem_maxlen)
+
     @property
     def state(self) -> bool:
         return self._state
+
+    def _detect_freeze(self, data) -> None:
+        """
+        This is a rather blunt way of detecting data freeze from the device but I don't see a more
+        elegant way yet ...
+
+        Sometimes the GPS device is dead but still returns data which look okay but do not change anymore.
+        I did not find a way to kill the GPSD when it's stale and restart it. So we track the last
+        10 latitudes and if they do not vary anymore we bail out.
+        """
+
+        if data.get('class', None) == "TPV":
+            lat = data.get('lat', None)
+
+            if lat:
+                self.mem.append(lat)
+
+                if len(self.mem) == self.mem_maxlen:
+                    if mean(self.mem) == lat:
+                        logger.error("GPS device seems to be frozen. Stop here.")
+                        raise StopIteration()
 
     def run(self) -> None:
         error_cnt = 0
@@ -54,6 +81,9 @@ class GPS_ifc(threading.Thread):
                     # resetting error cnts if next() did not throw
                     error_cnt = 0
                     missing_data_cnt = 0
+
+                    self._detect_freeze(data)
+
             except StopIteration as se:
                 self._state = False
                 self.running = False

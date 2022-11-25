@@ -1,6 +1,8 @@
 # see https://gist.github.com/FulcronZ/9948756fea515e6d18b8bc2c7182bdb8
-
+import json
 import logging
+import time
+
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 
@@ -31,19 +33,34 @@ class MQTTHandler(logging.Handler):
         Publish a single formatted logging record to a broker, then disconnect
         cleanly.
         """
-        msg = self.format(record)
+        payload = {
+            "msg": self.format(record),
+            "timestamp": time.time(),
+            "log_lev": record.levelname
+        }
+
+        msg = json.dumps(payload)
+
         publish.single(self.topic, msg, self.qos, self.retain,
             hostname=self.hostname, port=self.port,
             client_id=self.client_id, keepalive=self.keepalive,
             will=self.will, auth=self.auth, tls=self.tls,
             protocol=self.protocol, transport=self.transport)
 
-# hostname = 'iot.eclipse.org'
-# topic = 'orgID/appName/clusterID/deviceID/'
-#
-# # Create and configure a logger instance
-# logger = logging.getLogger('')
-# myHandler = MQTTHandler(hostname, topic)
-# myHandler.setLevel(logging.INFO)
-# myHandler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
-# logger.addHandler(myHandler)
+
+def getMQTTLogger(name: str,
+                  mqtt_host: str,
+                  mqtt_topic: str,
+                  level,
+                  fmt="[%(asctime)s] %(name)s: %(message)s",
+                  datefmt="%d%b%Y %H:%M:%S"
+                  ):
+    logger = logging.getLogger(name)
+    handler = MQTTHandler(mqtt_host, mqtt_topic)
+    handler.setLevel(level)
+    handler.setFormatter(
+        logging.Formatter(fmt=fmt, datefmt=datefmt)
+    )
+    logger.addHandler(handler)
+    return logger
+

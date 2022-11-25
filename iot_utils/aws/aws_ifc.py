@@ -1,57 +1,51 @@
-from pprint import pformat
-import os
-from pathlib import Path
-import time
 import json
+import os
+import time
+from pathlib import Path
+from pprint import pformat
 
 from awscrt import io, mqtt
-from awscrt.exceptions import AwsCrtError
 from awsiot import mqtt_connection_builder
-
 from dotenv import load_dotenv
+
 load_dotenv("/app/.env")
 
 import logging
 logger = logging.getLogger('aws_ifc')
 
-from iot_utils.proc import UnrecoverableError
 
 class AWS_client:
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
     def __enter__(self):
-        try:
-            event_loop_group = io.EventLoopGroup(1)
-            host_resolver = io.DefaultHostResolver(event_loop_group)
+        event_loop_group = io.EventLoopGroup(1)
+        host_resolver = io.DefaultHostResolver(event_loop_group)
 
-            client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
+        client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
 
-            kwargs = {
-                        "port"             : 8883,
-                        "clean_session"    : False,
-                        "client_bootstrap" : client_bootstrap,
-                        "keep_alive_secs"  : 6
-            }
-            kwargs.update(self.kwargs)
+        kwargs = {
+                    "port"             : 8883,
+                    "clean_session"    : False,
+                    "client_bootstrap" : client_bootstrap,
+                    "keep_alive_secs"  : 6
+        }
+        kwargs.update(self.kwargs)
 
-            self.mqtt_connection = mqtt_connection_builder.mtls_from_path(**kwargs)
+        self.mqtt_connection = mqtt_connection_builder.mtls_from_path(**kwargs)
 
-            logger.info("Connecting to AWS IOT with the following parameters:")
-            logger.info(pformat(self.kwargs))
+        logger.debug("Connecting to AWS IOT with the following parameters:")
+        logger.debug(pformat(self.kwargs))
 
-            connect_future = self.mqtt_connection.connect()
-            connect_future.result()
+        connect_future = self.mqtt_connection.connect()
+        connect_future.result()
 
-            logger.info("Successfully connected ...")
-            return self.mqtt_connection
-        except AwsCrtError as e:
-            logger.error("Could not connect to AWS IOT: Please check the certificates !!!")
-            raise UnrecoverableError()
+        logger.debug("Successfully connected ...")
+        return self.mqtt_connection
 
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        logger.info("cleaning up aws client ...")
+        logger.debug("cleaning up aws client ...")
         disconnect_future = self.mqtt_connection.disconnect()
         disconnect_future.result()
 
@@ -102,16 +96,16 @@ class AWS_iot:
             
             ) as client:
 
-            logger.info('Begin Publish')
+            logger.debug('Begin Publish')
 
 
             _p_json = json.dumps( { "timestamp": time.time(), "payload": payload } )
 
             client.publish(topic = topic, payload = _p_json, qos = mqtt.QoS.AT_LEAST_ONCE )
 
-            logger.info(f"Published data to topic: {topic}")
-            logger.info(f"{_p_json}")
-            logger.info('Publish End')
+            logger.debug(f"Published data to topic: {topic}")
+            logger.debug(f"{_p_json}")
+            logger.debug('Publish End')
 
     def publish_data(self, payload):
         self._publish(self.topic_data, payload)

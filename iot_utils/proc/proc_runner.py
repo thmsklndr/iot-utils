@@ -14,18 +14,22 @@ class ProcessRunner():
     _INIT = False
 
     def __init__(self,
-            cls,
+            cls: object,
             loop_intrvl: int,
-            loglev: str = _dflt_log_lev
+            logger: logging.Logger = logging.root,
+            sys_loglev: str = _dflt_log_lev,
+            sys_log_fmt: str = "[%(levelname)7s %(asctime)s] %(name)s: %(message)s",
+            sys_log_datefmt: str = "%d%b%Y %H:%M:%S"
         ):
         self.LOOP_INTERVAL = loop_intrvl
+        self.logger = logger
 
         if not ProcessRunner._INIT:
 
-            loglev = logging.getLevelName(loglev)
+            loglev = logging.getLevelName(sys_loglev)
 
             logging.basicConfig(level=loglev, stream=sys.stdout,
-                format= "[%(levelname)7s %(asctime)s] %(name)s: %(message)s", datefmt="%d%b%Y %H:%M:%S"
+                format= sys_log_fmt, datefmt=sys_log_datefmt
             )
 
             signal.signal(signal.SIGTERM, ProcessRunner.kill_handler)
@@ -57,12 +61,13 @@ class ProcessRunner():
                         break
                     time.sleep( self.LOOP_INTERVAL )
             except UnrecoverableError:
-                logging.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
-                sys.exit(1)
+                self.logger.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
+                break
             except Exception as e:
-                logging.error(f"Error during execution loop: {e}")
-                logging.info("Trying to resume after 10 secs ...")
+                self.logger.error(f"Error during execution loop: {e}")
+                self.logger.info("Trying to resume after 10 secs ...")
                 time.sleep(10)
+
             if ProcessRunner.GRACEFULL_STOP:
                 break
 

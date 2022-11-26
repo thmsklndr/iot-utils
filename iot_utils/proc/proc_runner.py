@@ -4,17 +4,18 @@ import signal
 import os
 
 import logging
+from typing import Type
 
 from iot_utils.exceptions import UnrecoverableError
 
-_dflt_log_lev = os.getenv("LOGGING_LOG_LEV", "INFO")
+_dflt_log_lev = os.getenv("LOGGING_LOG_LEV", "WARN")
 
 class ProcessRunner():
     GRACEFULL_STOP = False
     _INIT = False
 
     def __init__(self,
-            cls: object,
+            cls: Type,
             loop_intrvl: int,
             logger: logging.Logger = logging.root,
             sys_loglev: str = _dflt_log_lev,

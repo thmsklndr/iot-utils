@@ -10,7 +10,7 @@ license = "GPLv3"
 [tool.poetry.dependencies]
 python = "^3.8"
 paho-mqtt = "^1.6.1"
-boto3 = {extras = ["crt"], version = "^1.28.59"}
+awsiotsdk = "^1.19.0"
 
 
 [build-system]

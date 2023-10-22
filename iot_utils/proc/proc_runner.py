@@ -10,7 +10,7 @@ from iot_utils.exceptions import UnrecoverableError
 
 _dflt_log_lev = os.getenv("LOGGING_LOG_LEV", "WARN")
 
-class ProcessRunner():
+class ProcessRunner:
     GRACEFULL_STOP = False
     _INIT = False
 
@@ -51,11 +51,13 @@ class ProcessRunner():
         ProcessRunner.GRACEFULL_STOP = True
 
     def main(self):
+        msg_flag = True
         while True:
             try:
                 ctrl = self.cls()
                 while True:
                     ctrl.loop()
+                    msg_flag = True
                     if ProcessRunner.GRACEFULL_STOP:
                         if hasattr(ctrl, "shutdown"):
                             ctrl.shutdown()
@@ -65,8 +67,10 @@ class ProcessRunner():
                 self.logger.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
                 break
             except Exception as e:
-                self.logger.error(f"Error during execution loop: {e}")
-                self.logger.info("Trying to resume after 10 secs ...")
+                if msg_flag:
+                    self.logger.error(f"Error during execution loop: {e}")
+                    msg_flag = False
+
                 time.sleep(10)
 
             if ProcessRunner.GRACEFULL_STOP:

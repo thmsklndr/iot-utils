@@ -34,9 +34,10 @@ class MQTTHandler(logging.Handler):
         cleanly.
         """
         payload = {
-            "msg": self.format(record),
+            "msg": record.msg,
             "timestamp": time.time(),
-            "log_lev": record.levelname
+            "log_lev": record.levelname,
+            "module_name": record.name
         }
 
         msg = json.dumps(payload)

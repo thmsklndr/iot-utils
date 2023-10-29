@@ -90,9 +90,8 @@ class GPS_ifc(threading.Thread):
         if self.state:
             try:
                 fix: gps.gpsfix = self.gpsd.fix
+                # print(fix)
                 if fix.status:
-                    lat = fix.latitude
-                    long = fix.longitude
 
                     if gps.isfinite(fix.latitude) and gps.isfinite(fix.longitude):
                         ret = {

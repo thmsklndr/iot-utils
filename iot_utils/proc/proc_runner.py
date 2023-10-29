@@ -1,14 +1,11 @@
-import time
-import sys
-import signal
-import os
-
 import logging
+import signal
+import sys
+import time
 from typing import Type
 
 from iot_utils.exceptions import UnrecoverableError
 
-_dflt_log_lev = os.getenv("LOGGING_LOG_LEV", "WARN")
 
 class ProcessRunner:
     GRACEFULL_STOP = False
@@ -18,7 +15,7 @@ class ProcessRunner:
             cls: Type,
             loop_intrvl: int,
             logger: logging.Logger = logging.root,
-            sys_loglev: str = _dflt_log_lev,
+            sys_loglev: str = "WARN",
             sys_log_fmt: str = "[%(levelname)7s %(asctime)s] %(name)s: %(message)s",
             sys_log_datefmt: str = "%d%b%Y %H:%M:%S"
         ):

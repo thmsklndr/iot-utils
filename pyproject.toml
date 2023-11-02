@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iot-utils"
-version = "0.1.0"
+version = "0.5.2"
 description = ""
 authors = ["Thomas Kleinöder <devel@time4oss.de>"]
 readme = "README.md"
@@ -11,6 +11,12 @@ license = "GPLv3"
 python = "^3.8"
 paho-mqtt = "^1.6.1"
 awsiotsdk = "^1.19.0"
+redis = "^4"
+pydantic-settings = "^2.0.3"
+fastapi = "^0.104.1"
+ping3 = "^4.0.4"
+psutil = "^5.9.6"
+uvicorn = {extras = ["standard"], version = "^0.23.2"}
 
 
 [build-system]

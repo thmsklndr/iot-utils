@@ -1,0 +1,56 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+#env:
+#  PYTHON_VERSION: "3.10"
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+#        python-version: ["3.10", "3.11"]
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: vars
+      run: |
+        echo "TIMAGE_TAG=$(date '+%Y%m%d')" >> "$GITHUB_ENV"
+        echo "TIMAGE_NAME=python-${{ matrix.python-version }}"  >> "$GITHUB_ENV"
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # - name: debug
+    #   run: |
+    #     echo ${{ secrets.DOCKERHUB_USER }}
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        build-args: python_version=${{ matrix.python-version }}
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: thmsklndr/iot-utils-py${{ matrix.python-version }}:latest
+#        platforms: linux/amd64
+#        platforms: linux/arm64
+        platforms: linux/amd64,linux/arm64
+

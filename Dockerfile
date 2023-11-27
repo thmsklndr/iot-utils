@@ -33,7 +33,8 @@ RUN set -eux \
   && poetry install \
   && apt-get purge -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${BUILD_ONLY_PACKAGES} \
-  && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/usr/bin/tini", "--" ]
 

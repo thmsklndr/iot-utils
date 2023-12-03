@@ -5,7 +5,7 @@ ARG python_version
 
 LABEL org.opencontainers.image.authors="kleinoeder@time4oss.de"
 LABEL org.opencontainers.image.vendor="time4oss"
-LABEL org.opencontainers.image.version="20231031"
+LABEL org.opencontainers.image.version="20231203"
 
 ENV \
   DEBIAN_FRONTEND=noninteractive \

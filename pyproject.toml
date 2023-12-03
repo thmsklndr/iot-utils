@@ -8,7 +8,7 @@ packages = [{include = "iot_utils"}]
 license = "GPLv3"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 paho-mqtt = "^1.6.1"
 awsiotsdk = "^1.19.0"
 redis = "^4"
@@ -17,6 +17,7 @@ fastapi = "^0.104.1"
 ping3 = "^4.0.4"
 psutil = "^5.9.6"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
+httpx = "^0.25.2"
 
 
 [build-system]

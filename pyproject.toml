@@ -11,7 +11,7 @@ license = "GPLv3"
 python = "^3.10"
 paho-mqtt = "^1.6.1"
 awsiotsdk = "^1.19.0"
-redis = "^4"
+redis = {extras = ["hiredis"], version = "^5.0.1"}
 pydantic-settings = "^2.0.3"
 fastapi = "^0.104.1"
 ping3 = "^4.0.4"

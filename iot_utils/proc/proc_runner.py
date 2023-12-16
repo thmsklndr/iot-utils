@@ -60,10 +60,12 @@ class ProcessRunner:
                             ctrl.shutdown()
                         break
                     time.sleep( self.LOOP_INTERVAL )
-            except UnrecoverableError:
+            except (UnrecoverableError, NameError, AttributeError) as e:
+                self.logger.exception(e)
                 self.logger.error("*** Unrecoverable error. Please check the log. Cannot proceed. ***")
                 break
             except Exception as e:
+                #print(type(e))
                 if msg_flag:
                     self.logger.error(f"Error during execution loop: {e}")
                     msg_flag = False

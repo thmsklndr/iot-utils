@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iot-utils"
-version = "0.5.3"
+version = "0.5.4"
 description = ""
 authors = ["Thomas Kleinöder <devel@time4oss.de>"]
 readme = "README.md"
@@ -8,16 +8,16 @@ packages = [{include = "iot_utils"}]
 license = "GPLv3"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 paho-mqtt = "^1"
-awsiotsdk = "^1.19.0"
+awsiotsdk = "^1"
 redis = {extras = ["hiredis"], version = "^5.0.1"}
-pydantic-settings = "^2.2.1"
-fastapi = "^0.110.0"
-ping3 = "^4"
+pydantic-settings = "^2"
+fastapi = "*"
+ping3 = "*"
 psutil = "^5"
-uvicorn = "^0.28.0"
-httpx = "^0.25.2"
+uvicorn = "*"
+httpx = "*"
 
 
 [build-system]
